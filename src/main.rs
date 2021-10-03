@@ -272,7 +272,7 @@ async fn get_calendar<'a>(winter_semester: bool, year: i32, curses: Vec<String>)
         year,
         winter_semester,
     };
-    let calendar = Calendar::from(get_selected_events(semester, dbg!(curses)).await);
+    let calendar = Calendar::from(get_selected_events(semester, curses).await);
     calendar
 }
 
