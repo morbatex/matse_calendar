@@ -1,7 +1,8 @@
 use std::{collections::HashSet, io::Cursor};
 
 use cached::proc_macro::cached;
-use chrono::{NaiveDate, NaiveDateTime, Utc};
+use chrono::{NaiveDate, NaiveDateTime, TimeZone, Utc};
+use chrono_tz::Europe::Berlin;
 use ics::{
     properties::{
         Categories, Description, DtEnd, DtStart, Duration, Location as IcsLocation, Organizer,
@@ -59,7 +60,9 @@ impl Semester {
 #[derive(Clone, Deserialize)]
 struct Event {
     title: String,
+    #[serde(deserialize_with = "naive_from_berlin")]
     start: NaiveDateTime,
+    #[serde(deserialize_with = "naive_from_berlin")]
     end: NaiveDateTime,
     location: Location,
     lecturer: Lecturer,
@@ -153,6 +156,15 @@ where
         Some("0") | None => Ok(false),
         Some(_) => Ok(true),
     }
+}
+
+fn naive_from_berlin<'de, D>(deserializer: D) -> Result<NaiveDateTime, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let date = NaiveDateTime::deserialize(deserializer)?;
+    let date = Berlin.from_local_datetime(&date).unwrap();
+    Ok(date.naive_utc())
 }
 
 impl<'a> From<Event> for IcsEvent<'a> {
