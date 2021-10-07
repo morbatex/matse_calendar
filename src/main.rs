@@ -16,7 +16,7 @@ use rocket::{
     serde::json::Json,
     Response,
 };
-use serde::{Deserialize, Deserializer};
+use serde::{Deserialize, Deserializer, Serialize};
 
 #[macro_use]
 extern crate lazy_static;
@@ -24,6 +24,7 @@ extern crate lazy_static;
 extern crate rocket;
 
 const DATE_FORMAT: &str = "%Y%m%dT%H%M%SZ";
+const ACADEMIC_YEAR_NAMES: [&str; 4] = ["1. Lehrjahr", "2. Lehrjahr", "3. Lehrjahr", "Wahlpflicht"];
 
 lazy_static! {
     static ref REQWEST_CLIENT: Client = Client::new();
@@ -227,6 +228,18 @@ impl<'r, 'a: 'r> Responder<'r, 'a> for Calendar<'a> {
     }
 }
 
+#[derive(Serialize)]
+struct EventCategories {
+    name: &'static str,
+    curses: HashSet<String>,
+}
+
+impl From<(&'static str, HashSet<String>)> for EventCategories {
+    fn from((name, curses): (&'static str, HashSet<String>)) -> Self {
+        Self { name, curses }
+    }
+}
+
 async fn get_selected_events<'a>(semester: Semester, curses: Vec<String>) -> Vec<IcsEvent<'a>> {
     get_all_events(semester)
         .await
@@ -276,8 +289,8 @@ async fn get_calendar<'a>(winter_semester: bool, year: i32, curses: Vec<String>)
     calendar
 }
 
-#[get("/eventNames?<winter_semester>&<year>")]
-async fn get_event_names(winter_semester: bool, year: i32) -> Json<Vec<HashSet<String>>> {
+#[get("/eventCategories?<winter_semester>&<year>")]
+async fn get_event_names(winter_semester: bool, year: i32) -> Json<Vec<EventCategories>> {
     let semester = Semester {
         year,
         winter_semester,
@@ -285,13 +298,17 @@ async fn get_event_names(winter_semester: bool, year: i32) -> Json<Vec<HashSet<S
     let mut event_names = Vec::new();
     for i in 1..=4 {
         event_names.push(
-            get_academic_year_events(semester.clone(), i)
-                .await
-                .unwrap_or_default()
-                .into_iter()
-                .filter(|event| !event.is_holiday)
-                .map(|event| event.title)
-                .collect(),
+            (
+                ACADEMIC_YEAR_NAMES[i - 1],
+                get_academic_year_events(semester.clone(), i as u8)
+                    .await
+                    .unwrap_or_default()
+                    .into_iter()
+                    .filter(|event| !event.is_holiday)
+                    .map(|event| event.title)
+                    .collect(),
+            )
+                .into(),
         );
     }
     Json(event_names)
