@@ -185,7 +185,7 @@ impl<'a> From<Event> for IcsEvent<'a> {
         }
         ics_event.push(Summary::new(event.title));
         if let Some(information) = event.information {
-            let information = information.replace("<br />", "");
+            let information = information.replace("<br />", "\n");
             if !information.is_empty() {
                 ics_event.push(Description::new(information));
             }
