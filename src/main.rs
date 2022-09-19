@@ -4,6 +4,7 @@ use cached::proc_macro::cached;
 use chrono::{NaiveDate, NaiveDateTime, TimeZone, Utc};
 use chrono_tz::Europe::Berlin;
 use ics::{
+    escape_text,
     properties::{
         Categories, Description, DtEnd, DtStart, Duration, Location as IcsLocation, Organizer,
         Summary,
@@ -183,18 +184,18 @@ impl<'a> From<Event> for IcsEvent<'a> {
         } else {
             ics_event.push(DtEnd::new(event.get_end_date()));
         }
-        ics_event.push(Summary::new(event.title));
+        ics_event.push(Summary::new(escape_text(event.title)));
         if let Some(information) = event.information {
-            let information = information.replace("<br />", "\\n");
+            let information = information.replace("<br />", "\n");
             if !information.is_empty() {
-                ics_event.push(Description::new(information));
+                ics_event.push(Description::new(escape_text(information)));
             }
         }
         if event.location.contains_information() {
-            ics_event.push(IcsLocation::new(event.location.to_string()));
+            ics_event.push(IcsLocation::new(escape_text(event.location.to_string())));
         }
         if event.lecturer.contains_information() {
-            ics_event.push(Organizer::new(event.lecturer.to_string()));
+            ics_event.push(Organizer::new(escape_text(event.lecturer.to_string())));
         }
         if event.is_lecture {
             ics_event.push(Categories::new("LECTURE"));
