@@ -51,9 +51,9 @@ impl Semester {
 
     fn get_end_date(&self) -> Option<NaiveDate> {
         if self.winter_semester {
-            NaiveDate::from_ymd_opt(self.year + 1, 2, 28)
+            NaiveDate::from_ymd_opt(self.year + 1, 3, 15)
         } else {
-            NaiveDate::from_ymd_opt(self.year, 8, 31)
+            NaiveDate::from_ymd_opt(self.year, 9, 15)
         }
     }
 }
