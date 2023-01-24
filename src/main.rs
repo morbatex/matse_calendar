@@ -41,19 +41,19 @@ struct Semester {
 }
 
 impl Semester {
-    fn get_start_date(&self) -> NaiveDate {
+    fn get_start_date(&self) -> Option<NaiveDate> {
         if self.winter_semester {
-            NaiveDate::from_ymd(self.year, 9, 1)
+            NaiveDate::from_ymd_opt(self.year, 9, 1)
         } else {
-            NaiveDate::from_ymd(self.year, 3, 1)
+            NaiveDate::from_ymd_opt(self.year, 3, 1)
         }
     }
 
-    fn get_end_date(&self) -> NaiveDate {
+    fn get_end_date(&self) -> Option<NaiveDate> {
         if self.winter_semester {
-            NaiveDate::from_ymd(self.year + 1, 2, 28)
+            NaiveDate::from_ymd_opt(self.year + 1, 2, 28)
         } else {
-            NaiveDate::from_ymd(self.year, 8, 31)
+            NaiveDate::from_ymd_opt(self.year, 8, 31)
         }
     }
 }
@@ -278,8 +278,8 @@ async fn get_all_events(semester: Semester) -> Vec<Event> {
 async fn get_academic_year_events(semester: Semester, academic_year: u8) -> Option<Vec<Event>> {
     let url = MATSE_SCHEDULE_URL.join(&academic_year.to_string()).unwrap();
     let query = [
-        ("start", semester.get_start_date()),
-        ("end", semester.get_end_date()),
+        ("start", semester.get_start_date()?),
+        ("end", semester.get_end_date()?),
     ];
     REQWEST_CLIENT
         .get(url)
