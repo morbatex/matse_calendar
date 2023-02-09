@@ -236,7 +236,7 @@ impl<'r, 'a: 'r> Responder<'r, 'a> for Calendar<'a> {
                 CONTENT_DISPOSITION.as_str(),
                 " attachment; filename=\"calendar.ics\"",
             ))
-            .streamed_body(Cursor::new(self.to_string()))
+            .sized_body(None,Cursor::new(self.to_string()))
             .ok()
     }
 }
