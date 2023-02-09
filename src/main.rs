@@ -60,7 +60,7 @@ impl Semester {
 
 #[derive(Clone, Deserialize)]
 struct Event {
-    title: String,
+    name: String,
     #[serde(deserialize_with = "naive_from_berlin")]
     start: NaiveDateTime,
     #[serde(deserialize_with = "naive_from_berlin")]
@@ -174,7 +174,7 @@ impl<'a> From<Event> for IcsEvent<'a> {
             format!(
                 "{}-{}@matse.morbatex.com",
                 event.get_start_date(),
-                event.title.to_lowercase().replace(' ', "_")
+                event.name.to_lowercase().replace(' ', "_")
             ),
             Utc::now().format(DATE_FORMAT).to_string(),
         );
@@ -184,7 +184,7 @@ impl<'a> From<Event> for IcsEvent<'a> {
         } else {
             ics_event.push(DtEnd::new(event.get_end_date()));
         }
-        ics_event.push(Summary::new(escape_text(event.title)));
+        ics_event.push(Summary::new(escape_text(event.name)));
         if let Some(information) = event.information {
             let information = information.replace("<br />", "\n");
             if !information.is_empty() {
@@ -257,7 +257,7 @@ async fn get_selected_events<'a>(semester: Semester, curses: Vec<String>) -> Vec
     get_all_events(semester)
         .await
         .into_iter()
-        .filter(|event| curses.contains(&event.title))
+        .filter(|event| curses.contains(&event.name))
         .map(IcsEvent::from)
         .collect::<Vec<_>>()
 }
@@ -318,7 +318,7 @@ async fn get_event_names(winter_semester: bool, year: i32) -> Json<Vec<EventCate
                     .unwrap_or_default()
                     .into_iter()
                     .filter(|event| !event.is_holiday)
-                    .map(|event| event.title)
+                    .map(|event| event.name)
                     .collect(),
             )
                 .into(),
