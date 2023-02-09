@@ -98,21 +98,19 @@ struct Location {
 
 impl ToString for Location {
     fn to_string(&self) -> String {
-        let empty = String::from("");
+        let empty = String::new();
         let name = self
             .name
             .as_ref()
-            .map(|name| format!("{}\n", name))
+            .map(|name| format!("{name}\n"))
             .unwrap_or_default();
         let address = self
             .street
             .as_ref()
-            .map(|street| format!("{} {}\n", street, self.nr.as_ref().unwrap_or(&empty)))
+            .map(|street| format!("{street} {}\n", self.nr.as_ref().unwrap_or(&empty)))
             .unwrap_or_default();
         format!(
-            "{}{}{}",
-            name,
-            address,
+            "{name}{address}{}",
             self.desc.as_ref().unwrap_or(&empty)
         )
         .trim()
@@ -135,10 +133,10 @@ struct Lecturer {
 impl ToString for Lecturer {
     fn to_string(&self) -> String {
         match (self.name.as_ref(), self.mail.as_ref()) {
-            (Some(name), Some(mail)) => format!("CN={}:MAILTO:{}", name, mail),
-            (Some(name), None) => format!("CN={}", name),
-            (None, Some(mail)) => format!(":MAILTO:{}", mail),
-            _ => "".into(),
+            (Some(name), Some(mail)) => format!("CN={name}:MAILTO:{mail}"),
+            (Some(name), None) => format!("CN={name}"),
+            (_, Some(mail)) => format!(":MAILTO:{mail}"),
+            _ => String::new(),
         }
     }
 }
