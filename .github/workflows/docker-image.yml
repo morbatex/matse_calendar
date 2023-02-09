@@ -48,7 +48,7 @@ jobs:
           context: ./
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/{{ steps.read_name.outputs.value }}:latest, ${{ secrets.DOCKER_HUB_USERNAME }}/{{ steps.read_name.outputs.value }}:{{ steps.read_version.outputs.value}}, ${{ secrets.DOCKER_HUB_USERNAME }}/{{ steps.read_name.outputs.value }}:{{ github.sha }}
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ steps.read_name.outputs.value }}:latest, ${{ secrets.DOCKER_HUB_USERNAME }}/${{ steps.read_name.outputs.value }}:${{ steps.read_version.outputs.value }}, ${{ secrets.DOCKER_HUB_USERNAME }}/${{ steps.read_name.outputs.value }}:${{ github.sha }}
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
