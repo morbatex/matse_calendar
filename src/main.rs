@@ -1,7 +1,7 @@
 use std::{collections::HashSet, io::Cursor};
 
 use cached::proc_macro::cached;
-use chrono::{NaiveDate, NaiveDateTime, TimeZone, Utc};
+use chrono::{NaiveDate, NaiveDateTime, TimeZone};
 use chrono_tz::Europe::Berlin;
 use ics::{
     escape_text,
@@ -19,6 +19,7 @@ use rocket::{
     Response,
 };
 use serde::{Deserialize, Deserializer, Serialize};
+use time::{OffsetDateTime, format_description::{FormatItem, self}};
 
 #[macro_use]
 extern crate lazy_static;
@@ -32,6 +33,7 @@ lazy_static! {
     static ref REQWEST_CLIENT: Client = Client::new();
     static ref MATSE_SCHEDULE_URL: Url =
         Url::parse("https://www.matse.itc.rwth-aachen.de/stundenplan/web/eventFeed/").unwrap();
+    static ref DATE_FORMAT_TIME: Vec<FormatItem<'static>> = format_description::parse("[year][month][day]T[hour][minute][second]Z").unwrap();
 }
 
 #[derive(Hash, PartialEq, Eq, Clone, FromForm)]
@@ -174,7 +176,7 @@ impl<'a> From<Event> for IcsEvent<'a> {
                 event.get_start_date(),
                 event.name.to_lowercase().replace(' ', "_")
             ),
-            Utc::now().format(DATE_FORMAT).to_string(),
+            OffsetDateTime::now_utc().format(&DATE_FORMAT_TIME).unwrap().to_string(),
         );
         ics_event.push(DtStart::new(event.get_start_date()));
         if event.is_all_day {
@@ -284,8 +286,7 @@ async fn get_academic_year_events(semester: Semester, academic_year: u8) -> Opti
         .query(&query)
         .send()
         .await
-        .ok()?
-        .json::<Vec<Event>>()
+        .ok()?.json::<Vec<Event>>()
         .await
         .ok()
 }
