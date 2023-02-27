@@ -152,7 +152,7 @@ where
     D: Deserializer<'de>,
 {
     match Option::deserialize(deserializer)? {
-        Some("0") | None => Ok(false),
+        Some("0") | Some("") | None => Ok(false),
         Some(_) => Ok(true),
     }
 }
