@@ -62,6 +62,7 @@ impl Semester {
 
 #[derive(Clone, Deserialize)]
 struct Event {
+    #[serde(deserialize_with = "strip_bang")]
     name: String,
     #[serde(deserialize_with = "naive_from_berlin")]
     start: NaiveDateTime,
@@ -147,6 +148,13 @@ impl Lecturer {
     fn contains_information(&self) -> bool {
         self.name.is_some() || self.mail.is_some()
     }
+}
+
+fn strip_bang<'de, D>(deserializer: D) -> Result<String, D::Error>
+where
+    D: Deserializer<'de>
+{
+    Deserialize::deserialize(deserializer).map(|val: String| val.trim_start_matches("(!) ").to_string())
 }
 
 fn bool_from_str_option<'de, D>(deserializer: D) -> Result<bool, D::Error>
