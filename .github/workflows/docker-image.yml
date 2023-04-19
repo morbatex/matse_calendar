@@ -15,15 +15,12 @@ jobs:
       - name: Check Out Repo 
         uses: actions/checkout@v3
 
-      - name: Semver
-        id: semver
-        uses: morbatex/cargo_semver_update@v1
-
-      - uses: EndBug/add-and-commit@v9.1.1
+      - name: Read Version
+        id: read_version
+        uses: SebRollen/toml-action@v1.0.2
         with:
-          message: Changed version to ${{ steps.semver.outputs.new_version_with_v }}
-          committer_name: GitHub Actions
-          committer_email: actions@github.com
+          file: 'Cargo.toml'
+          field: 'package.version'
 
       - name: Read Name
         id: read_name
@@ -49,7 +46,7 @@ jobs:
           context: ./
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ steps.read_name.outputs.value }}:latest, ${{ secrets.DOCKER_HUB_USERNAME }}/${{ steps.read_name.outputs.value }}:${{ steps.semver.outputs.new_version }}, ${{ secrets.DOCKER_HUB_USERNAME }}/${{ steps.read_name.outputs.value }}:${{ github.sha }}
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ steps.read_name.outputs.value }}:latest, ${{ secrets.DOCKER_HUB_USERNAME }}/${{ steps.read_name.outputs.value }}:${{ steps.read_version.outputs.value }}, ${{ secrets.DOCKER_HUB_USERNAME }}/${{ steps.read_name.outputs.value }}:${{ github.sha }}
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
