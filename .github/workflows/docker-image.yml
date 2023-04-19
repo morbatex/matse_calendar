@@ -25,13 +25,6 @@ jobs:
           committer_name: GitHub Actions
           committer_email: actions@github.com
 
-      - name: Read Version
-        id: read_version
-        uses: SebRollen/toml-action@v1.0.2
-        with:
-          file: 'Cargo.toml'
-          field: 'package.version'
-
       - name: Read Name
         id: read_name
         uses: SebRollen/toml-action@v1.0.2
@@ -56,7 +49,7 @@ jobs:
           context: ./
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ steps.read_name.outputs.value }}:latest, ${{ secrets.DOCKER_HUB_USERNAME }}/${{ steps.read_name.outputs.value }}:${{ steps.read_version.outputs.value }}, ${{ secrets.DOCKER_HUB_USERNAME }}/${{ steps.read_name.outputs.value }}:${{ github.sha }}
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ steps.read_name.outputs.value }}:latest, ${{ secrets.DOCKER_HUB_USERNAME }}/${{ steps.read_name.outputs.value }}:${{ steps.semver.outputs.new_version }}, ${{ secrets.DOCKER_HUB_USERNAME }}/${{ steps.read_name.outputs.value }}:${{ github.sha }}
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
