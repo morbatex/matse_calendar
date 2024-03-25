@@ -11,7 +11,7 @@ chrono = { version = "0.4.35", default-features = false, features = ["alloc","se
 chrono-tz = "0.8.6"
 ics = "0.5.8"
 lazy_static = "1.4.0"
-reqwest = { version = "0.12.1", features = ["json"] }
+reqwest = { version = "0.12.2", features = ["json"] }
 rocket = { version = "0.5.0", features = ["json"] }
 serde = { version = "1.0.197", features = ["derive"] }
 time = "0.3.34"
