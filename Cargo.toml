@@ -6,7 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-cached = { version = "0.51.0", features = ["async" ]}
+cached = { version = "0.53.0", features = ["async" ]}
 chrono = { version = "0.4.38", default-features = false, features = ["alloc","serde"] }
 chrono-tz = "0.9.0"
 ics = "0.5.8"
