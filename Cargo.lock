@@ -935,8 +935,9 @@ checksum = "30e22bd8629359895450b59ea7a776c850561b96a3b1d31321c1949d9e6c9146"
 
 [[package]]
 name = "is-terminal"
-version = "0.4.12"
-source = "git+https://github.com/morbatex/is-terminal.git?branch=update-hermit-abi#616ba9712ebda0172eba1131d74b6ec2d6dfe4bc"
+version = "0.4.13"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "261f68e344040fbd0edea105bef17c66edf46f984ddb1115b775ce31be948f4b"
 dependencies = [
  "hermit-abi 0.4.0",
  "libc",
@@ -1021,7 +1022,7 @@ dependencies = [
 
 [[package]]
 name = "matse_calendar"
-version = "1.2.4"
+version = "1.2.5"
 dependencies = [
  "cached",
  "chrono",
