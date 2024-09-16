@@ -11,7 +11,7 @@ chrono = { version = "0.4.38", default-features = false, features = [
     "alloc",
     "serde",
 ] }
-chrono-tz = "0.9.0"
+chrono-tz = "0.10.0"
 ics = "0.5.8"
 lazy_static = "1.4.0"
 reqwest = { version = "0.12.4", features = ["json"] }
